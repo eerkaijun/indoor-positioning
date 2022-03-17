@@ -74,7 +74,7 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
         try {
             saveRecording();
         } catch(Exception ex) {
-            Log.e("Error saving into csv file", ex);
+            Log.e("Error saving into csv file", ex.toString());
         } finally {
             // then clear the buffer
             sensorBuffer = new ArrayList<ArrayList<Float>>();
