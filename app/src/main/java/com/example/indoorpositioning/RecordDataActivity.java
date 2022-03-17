@@ -8,10 +8,18 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 
 public class RecordDataActivity extends AppCompatActivity implements SensorEventListener {
 
@@ -63,7 +71,35 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
     public void stopRecording(View view) {
         recordingInProgress = false;
         // write to csv file
-        // then clear the buffer
-        sensorBuffer = new ArrayList<ArrayList<Float>>();
+        try {
+            saveRecording();
+        } catch(Exception ex) {
+            Log.e("Error saving into csv file", ex);
+        } finally {
+            // then clear the buffer
+            sensorBuffer = new ArrayList<ArrayList<Float>>();
+        }
+    }
+
+    private void saveRecording() throws IOException {
+        // Create an csv file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFIleName = "Sensor_" + timeStamp + "_";
+        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+        File data = File.createTempFile(
+                imageFIleName,
+                ".csv",
+                storageDir
+        );
+
+        // write sensor data to file
+        FileWriter fw = new FileWriter(data);
+        BufferedWriter bw = new BufferedWriter(fw);
+        for (int i=0; i<sensorBuffer.size(); i++) {
+            bw.write(sensorBuffer.get(i).get(0)+","+sensorBuffer.get(i).get(1)+","+sensorBuffer.get(i).get(2));
+            bw.newLine();
+        }
+        bw.close();
+        fw.close();
     }
 }
