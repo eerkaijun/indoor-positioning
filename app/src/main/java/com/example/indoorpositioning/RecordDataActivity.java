@@ -1,16 +1,21 @@
 package com.example.indoorpositioning;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -22,6 +27,8 @@ import java.util.Arrays;
 import java.util.Date;
 
 public class RecordDataActivity extends AppCompatActivity implements SensorEventListener {
+
+    static final int REQUEST_ID_READ_WRITE_PERMISSION = 0;
 
     // get access to sensors
     private SensorManager sensorManager;
@@ -40,9 +47,23 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_record_data);
 
+        askPermission();
+
         // initialise sensors
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         magneticField = (Sensor) sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        sensorManager.registerListener(this, magneticField, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(this);
     }
 
     @Override
@@ -57,6 +78,7 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
         dataPoint.add((float) h);
 
         if (recordingInProgress) sensorBuffer.add(dataPoint);
+        Log.d("Buffer content", sensorBuffer.toString());
     }
 
     @Override
@@ -85,12 +107,13 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
         // Create an csv file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFIleName = "Sensor_" + timeStamp + "_";
-        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         File data = File.createTempFile(
                 imageFIleName,
                 ".csv",
                 storageDir
         );
+        Log.d("File path", data.getAbsolutePath());
 
         // write sensor data to file
         FileWriter fw = new FileWriter(data);
@@ -101,5 +124,40 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
         }
         bw.close();
         fw.close();
+    }
+
+    private void askPermission() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            int readPermission = ActivityCompat.checkSelfPermission(this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE);
+            int writePermission = ActivityCompat.checkSelfPermission(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+            if (writePermission != PackageManager.PERMISSION_GRANTED ||
+                    readPermission != PackageManager.PERMISSION_GRANTED) {
+                this.requestPermissions(
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                Manifest.permission.READ_EXTERNAL_STORAGE},
+                        REQUEST_ID_READ_WRITE_PERMISSION
+                );
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case REQUEST_ID_READ_WRITE_PERMISSION: {
+                if (grantResults.length > 1
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                        && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, "Permission granted!", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(this, "Permission denied!", Toast.LENGTH_LONG).show();
+                }
+                break;
+            }
+        }
     }
 }
