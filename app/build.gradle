@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.application'
+    id 'com.chaquo.python'
 }
 
 android {
@@ -7,12 +8,39 @@ android {
 
     defaultConfig {
         applicationId "com.example.indoorpositioning"
+
+        python{
+            pip{
+                install "numpy"
+                install "matplotlib"
+                install "csv"
+            }
+        }
+
+        //give source folder to python
+        sourceSets{
+            main{
+                python{
+                    srcDirs = ["src/main/python"]
+                }
+            }
+        }
+
         minSdk 28
         targetSdk 32
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+        }
+
+        //give path to python.exe in the computing device android studio is running
+        python{
+            buildPython "/Users/p.koutsouvelis/anaconda3/bin/python3.7"
+        }
     }
 
     buildTypes {
@@ -36,3 +64,4 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 }
+
