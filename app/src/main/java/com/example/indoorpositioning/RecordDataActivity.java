@@ -25,6 +25,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 public class RecordDataActivity extends AppCompatActivity implements SensorEventListener {
 
@@ -35,12 +37,18 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
 
     // represent a sensor
     private Sensor magneticField;
+    private Sensor accelerometer;
+    private Sensor gyroscope;
 
     // state to keep track of whether recording is in progress
     boolean recordingInProgress = false;
 
     // sensors buffer during recording
-    ArrayList<ArrayList<Float>> sensorBuffer = new ArrayList<ArrayList<Float>>();
+    ArrayList<ArrayList<Float>> sensorBuffer = new ArrayList();
+    // buffer to store all the sensor data at one time instance
+    ArrayList<Float> singlePointBuffer = new ArrayList(
+            Arrays.asList(0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0)
+    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,12 +60,16 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
         // initialise sensors
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         magneticField = (Sensor) sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        accelerometer = (Sensor) sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        gyroscope = (Sensor) sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         sensorManager.registerListener(this, magneticField, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, gyroscope, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
@@ -68,17 +80,36 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        double h = Math.sqrt(sensorEvent.values[0] * sensorEvent.values[0] + sensorEvent.values[1] * sensorEvent.values[1] + sensorEvent.values[2] * sensorEvent.values[2]);
-
-        // each datapoint is a four dimensional magnetic field sensor data
-        ArrayList<Float> dataPoint = new ArrayList<Float>();
-        dataPoint.add(sensorEvent.values[0]);
-        dataPoint.add(sensorEvent.values[1]);
-        dataPoint.add(sensorEvent.values[2]);
-        dataPoint.add((float) h);
-
-        if (recordingInProgress) sensorBuffer.add(dataPoint);
-        Log.d("Buffer content", sensorBuffer.toString());
+        if (sensorEvent.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+            double h = Math.sqrt(sensorEvent.values[0] * sensorEvent.values[0] + sensorEvent.values[1] * sensorEvent.values[1] + sensorEvent.values[2] * sensorEvent.values[2]);
+            // each datapoint is a four dimensional magnetic field sensor data
+            singlePointBuffer.set(0, sensorEvent.values[0]);
+            singlePointBuffer.set(1, sensorEvent.values[1]);
+            singlePointBuffer.set(2, sensorEvent.values[2]);
+            singlePointBuffer.set(3, (float) h);
+            if (recordingInProgress) {
+                // deep copy
+                ArrayList<Float> singlePointBufferClone = new ArrayList<>();
+                Iterator<Float> it = singlePointBuffer.iterator();
+                while (it.hasNext()) {
+                    Float x = it.next();
+                    singlePointBufferClone.add(x);
+                }
+                sensorBuffer.add(singlePointBufferClone);
+            }
+        } else if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            // each datapoint is a three dimensional accelerometer sensor data
+            singlePointBuffer.set(4, sensorEvent.values[0]);
+            singlePointBuffer.set(5, sensorEvent.values[1]);
+            singlePointBuffer.set(6, sensorEvent.values[2]);
+        } else if (sensorEvent.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
+            // each datapoint is a three dimensional gyroscope sensor data
+            singlePointBuffer.set(7, sensorEvent.values[0]);
+            singlePointBuffer.set(8, sensorEvent.values[1]);
+            singlePointBuffer.set(9, sensorEvent.values[2]);
+        }
+        Log.d("Single buffer content", singlePointBuffer.toString());
+        Log.d("Overall buffer content", sensorBuffer.toString());
     }
 
     @Override
@@ -88,6 +119,7 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
 
     public void startRecording(View view) {
         recordingInProgress = true;
+        Toast.makeText(this, "Recording started!", Toast.LENGTH_LONG).show();
     }
 
     public void stopRecording(View view) {
@@ -100,6 +132,7 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
         } finally {
             // then clear the buffer
             sensorBuffer = new ArrayList<ArrayList<Float>>();
+            Toast.makeText(this, "Recording stopped!", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -118,8 +151,19 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
         // write sensor data to file
         FileWriter fw = new FileWriter(data);
         BufferedWriter bw = new BufferedWriter(fw);
+        bw.write("mag_x,mag_y,mag_z,mag_h,acc_x,acc_y,acc_z,gyro_x,gyro_y,gyro_z"); // header for csv file
+        bw.newLine();
         for (int i=0; i<sensorBuffer.size(); i++) {
-            bw.write(sensorBuffer.get(i).get(0)+","+sensorBuffer.get(i).get(1)+","+sensorBuffer.get(i).get(2));
+            bw.write(sensorBuffer.get(i).get(0)+","+
+                    sensorBuffer.get(i).get(1)+","+
+                    sensorBuffer.get(i).get(2)+","+
+                    sensorBuffer.get(i).get(3)+","+
+                    sensorBuffer.get(i).get(4)+","+
+                    sensorBuffer.get(i).get(5)+","+
+                    sensorBuffer.get(i).get(6)+","+
+                    sensorBuffer.get(i).get(7)+","+
+                    sensorBuffer.get(i).get(8)+","+
+                    sensorBuffer.get(i).get(9));
             bw.newLine();
         }
         bw.close();
