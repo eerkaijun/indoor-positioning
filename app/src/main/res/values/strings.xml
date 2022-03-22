@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">IndoorPositioning</string>
+    <string name="plotdata">Select Plot Options</string>
+    <string name="plotsensor">Sensor Measurements</string>
+    <string name="pltpdr">PDR Trajectory</string>
+    <string name="back">Go Back</string>
+    <string name="selectsensortext">Choose a number from 0 to 9 corresponding to the
+    desired sensor data: (0: mag_x, 1: mag_y, 2: mag_z, 3: mag_h, 4: acc_x, 5: acc_y,
+        6: acc_z, 7: gyro_x, 8: gyro_y, 9: gyro_z)</string>
+    <string name="insertnumber">Insert number:</string>
+    <string name="input_height">Insert height in cm:</string>
+    <string name="inputsextext">Choose a number between 0 and 1 corresponding to your sex:
+        (0:female, 1: male)</string>
+    <string name="plot">Plot</string>
 </resources>

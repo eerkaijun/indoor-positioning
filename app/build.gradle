@@ -13,7 +13,8 @@ android {
             pip{
                 install "numpy"
                 install "matplotlib"
-                install "csv"
+                install "pandas"
+                install "pillow"
             }
         }
 

@@ -5,6 +5,7 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -134,6 +135,22 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
             sensorBuffer = new ArrayList<ArrayList<Float>>();
             Toast.makeText(this, "Recording stopped!", Toast.LENGTH_LONG).show();
         }
+
+    }
+
+    public void goPlotsOptionPage(View view) {
+        if(!recordingInProgress) {
+            Intent intent = new Intent(this, PlotDataActivity.class);
+            startActivity(intent);
+        }
+        else {
+            Toast.makeText(this, "Stop the recording to plot results!", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void goHomePage(View view) {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
     private void saveRecording() throws IOException {
