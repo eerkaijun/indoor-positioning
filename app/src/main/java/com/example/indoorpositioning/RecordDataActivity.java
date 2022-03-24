@@ -44,11 +44,15 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
     // state to keep track of whether recording is in progress
     boolean recordingInProgress = false;
 
+    // Sensors data value used to calculate orientation
+    float[] accelerometerValues = new float[3];
+    float[] magneticFieldValues = new float[3];
+
     // sensors buffer during recording
     ArrayList<ArrayList<Float>> sensorBuffer = new ArrayList();
     // buffer to store all the sensor data at one time instance
     ArrayList<Float> singlePointBuffer = new ArrayList(
-            Arrays.asList(0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0)
+            Arrays.asList(0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0)
     );
 
     @Override
@@ -68,15 +72,30 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
     @Override
     protected void onResume() {
         super.onResume();
-        sensorManager.registerListener(this, magneticField, SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(this, gyroscope, SensorManager.SENSOR_DELAY_NORMAL);
+        // SENSOR_DELAY_NORMAL approximately 0.2s
+        // SENSOR_DELAY_GAME approximately 0.02s
+        sensorManager.registerListener(this, magneticField, SensorManager.SENSOR_DELAY_GAME);
+        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_GAME);
+        sensorManager.registerListener(this, gyroscope, SensorManager.SENSOR_DELAY_GAME);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         sensorManager.unregisterListener(this);
+    }
+
+    private float calculateOrientation() {
+        float[] values = new float[3];
+        float[] R = new float[9];
+
+        // calculate degrees
+        SensorManager.getRotationMatrix(R, null, accelerometerValues, magneticFieldValues);
+        SensorManager.getOrientation(R, values);
+
+        float degree = (float) Math.toDegrees(values[0]);
+
+        return degree;
     }
 
     @Override
@@ -88,6 +107,16 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
             singlePointBuffer.set(1, sensorEvent.values[1]);
             singlePointBuffer.set(2, sensorEvent.values[2]);
             singlePointBuffer.set(3, (float) h);
+
+            // for degree calculation
+            magneticFieldValues[0] = sensorEvent.values[0];
+            magneticFieldValues[1] = sensorEvent.values[1];
+            magneticFieldValues[2] = sensorEvent.values[2];
+
+            // keep orientation degree in buffer
+            float degree = calculateOrientation();
+            singlePointBuffer.set(10, degree);
+
             if (recordingInProgress) {
                 // deep copy
                 ArrayList<Float> singlePointBufferClone = new ArrayList<>();
@@ -103,6 +132,11 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
             singlePointBuffer.set(4, sensorEvent.values[0]);
             singlePointBuffer.set(5, sensorEvent.values[1]);
             singlePointBuffer.set(6, sensorEvent.values[2]);
+
+            // for degree calculation
+            accelerometerValues[0] = sensorEvent.values[0];
+            accelerometerValues[1] = sensorEvent.values[1];
+            accelerometerValues[2] = sensorEvent.values[2];
         } else if (sensorEvent.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
             // each datapoint is a three dimensional gyroscope sensor data
             singlePointBuffer.set(7, sensorEvent.values[0]);
@@ -168,7 +202,7 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
         // write sensor data to file
         FileWriter fw = new FileWriter(data);
         BufferedWriter bw = new BufferedWriter(fw);
-        bw.write("mag_x,mag_y,mag_z,mag_h,acc_x,acc_y,acc_z,gyro_x,gyro_y,gyro_z"); // header for csv file
+        bw.write("mag_x,mag_y,mag_z,mag_h,acc_x,acc_y,acc_z,gyro_x,gyro_y,gyro_z,degree"); // header for csv file
         bw.newLine();
         for (int i=0; i<sensorBuffer.size(); i++) {
             bw.write(sensorBuffer.get(i).get(0)+","+
@@ -180,7 +214,8 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
                     sensorBuffer.get(i).get(6)+","+
                     sensorBuffer.get(i).get(7)+","+
                     sensorBuffer.get(i).get(8)+","+
-                    sensorBuffer.get(i).get(9));
+                    sensorBuffer.get(i).get(9)+","+
+                    sensorBuffer.get(i).get(10));
             bw.newLine();
         }
         bw.close();
