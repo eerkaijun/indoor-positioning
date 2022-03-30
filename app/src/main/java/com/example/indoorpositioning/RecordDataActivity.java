@@ -74,9 +74,9 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
         super.onResume();
         // SENSOR_DELAY_NORMAL approximately 0.2s
         // SENSOR_DELAY_GAME approximately 0.02s
-        sensorManager.registerListener(this, magneticField, SensorManager.SENSOR_DELAY_GAME);
-        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_GAME);
-        sensorManager.registerListener(this, gyroscope, SensorManager.SENSOR_DELAY_GAME);
+        sensorManager.registerListener(this, magneticField, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, gyroscope, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
