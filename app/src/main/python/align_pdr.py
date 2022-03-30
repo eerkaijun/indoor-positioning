@@ -5,16 +5,20 @@ from PIL import Image
 import matplotlib
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 import numpy as np
 import io
 import base64
 
-def pdr(sex, height):
+def align_pdr(sensor, sex, height):
     #Read input files
     #inputfile = 'Sensor_20220321_190524_8170278612129910134.csv'
     #filename = join(dirname(__file__), inputfile)
     #inputfile_reader = pd.read_csv(filename)
     #inputfile = str(filename)
+    sensor = int(sensor)
+    sex = int(sex)
+    height = int(height)
 
     inputfile_1 = 'Sensor_20220324_164917_6405095473183875478.csv'
     inputfile_2 = 'Sensor_20220324_165108_1498070707813036265.csv'
@@ -30,8 +34,6 @@ def pdr(sex, height):
     #Declare variables
     x_vals = []
     y_vals = []
-    sex = int(sex)
-    height = int(height)
     alpha = 0.9 #filter parameter
     threshold = -0.085 #step detection threshold
     m = 5 #smoothing factor
@@ -44,18 +46,14 @@ def pdr(sex, height):
     step_counter  = 0
     total_dist = 0
     prev_angle = 0
-    #total_dist_arr = []
-    #step_arr = []
+    total_dist_arr = []
+    step_arr = []
     bias = 12
-    #sensor_vals = []
+    sensor_vals = []
 
     #Row indices for every 0.5 seconds (? to be changed), depending on the sampling rate
     #Assume sampling rate is 4 Hz
-<<<<<<< Updated upstream
-    sampling_rate = 50
-=======
     sampling_rate = 4.8
->>>>>>> Stashed changes
     desired_rate = 2
     ratio = int(sampling_rate/desired_rate) #data to read every iteration
 
@@ -129,8 +127,8 @@ def pdr(sex, height):
 
     #Compute new coordinates
     for i in range(0, (len(a_m) - ratio + 1), ratio):
-        avg_angle = np.mean(d_m[i : (i + ratio)]) - angle_offset + bias #make it non-aligned
-        #avg_val = np.mean(inputfile_reader.iloc[i : (i + ratio), sensor_to_plot])
+        avg_angle = np.mean(d_m[i : (i + ratio)]) 
+        avg_val = np.mean(inputfile_reader.iloc[i : (i + ratio), sensor])
         for j in a_m[i : (i + ratio)]:
             if (j > threshold):
                 step_detect = 1
@@ -159,18 +157,53 @@ def pdr(sex, height):
             prev_y = new_y
         x_vals.append(new_x)
         y_vals.append(new_y)
-        #sensor_vals.append(avg_val)
-        #step_arr.append(step_detect)
-        #total_dist_arr.append(total_dist)
+        sensor_vals.append(avg_val)
+        step_arr.append(step_detect)
+        total_dist_arr.append(total_dist)
         step_detect = 0
 
+    #Figure titles
+    measurement = ['Magnetometer measurement (uT): X-axis',
+                   'Magnetometer measurement (uT): Y-axis',
+                   'Magnetometer measurement (uT): Z-axis',
+                   'Magnetic field strength measurement (V/m)',
+                   'Accelerometer measurement (m/s2): X-axis',
+                   'Accelerometer measurement (m/s2): Y-axis',
+                   'Accelerometer measurement (m/s2): Z-axis',
+                   'Gyroscope measurement (deg/s): X-axis',
+                   'Gyroscope measurement (deg/s): Y-axis',
+                   'Gyroscope measurement (deg/s): Z-axis',
+                   'Degrees measurement (deg)']
+
+    #Define contour
+    def prepare_z(X, Y, I):
+        Z = []
+        for i in range(len(X)):
+            Z_1 = []
+            for j in range(len(X)): #X, Y, I of equal size
+                Z_1.append(-1000)
+            Z_1[i] = I[i]
+            Z.append(Z_1)
+        upper = max(I)
+        lower = min(I)
+        return Z, upper, lower
+
+    Z, upper, lower = prepare_z(x_vals, y_vals, sensor_vals)
+
     #Plot trajectory
+    image_name = 'map.png'
+    image_file = join(dirname(__file__), image_name)
+    img = mpimg.imread(image_file)
     fig = plt.figure()
     a1 = fig.add_subplot(1,1,1)
-    a1.plot(x_vals, y_vals)
-    #a1.set_title('PDR Trajectory')
+    a1.imshow(img, extent=[-90, 60, -120, 40])
+    #a1.title(measurement[sensor])
+    line = a1.contour(x_vals, y_vals, Z, levels = np.linspace(lower,upper, 20), linewidths = 5, cmap='Blues', interpolation='none')
+    fig.colorbar(line, ax = a1)
     #a1.set_xlabel('Horizontal displacement (meters)')
     #a1.set_ylabel('Vertical displacement (meters)')
+    #x_ticks = np.linspace(55.92205, 55.9234, len(Z))
+    #x_ticks = np.linspace(-3.17318, -3.17067, len(Z))
 
     #Use this canvas to convert image to numpy array
     fig.canvas.draw()

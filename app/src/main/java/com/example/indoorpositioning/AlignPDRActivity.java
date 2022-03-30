@@ -16,24 +16,27 @@ import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
 
-public class PlotPDRActivity extends AppCompatActivity {
+public class AlignPDRActivity extends AppCompatActivity {
 
     //Declare variables
-    EditText et2, et3;
-    Button btn2;
-    ImageView iv2;
-    String Sex;
-    String Height;
+    EditText et1;
+    Button btn1;
+    ImageView iv1;
+    String sensor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_plot_pdr);
+        setContentView(R.layout.activity_align_pdr);
 
-        et2 = (EditText) findViewById(R.id.insert_num2);
-        et3 = (EditText) findViewById(R.id.insert_num3);
-        btn2 = (Button) findViewById(R.id.plot_btn2);
-        iv2 = (ImageView) findViewById(R.id.plot_sensor_image2);
+        Intent intent = getIntent();
+
+        String sex = intent.getStringExtra("SEX");
+        String height = intent.getStringExtra("HEIGHT");
+
+        et1 = (EditText) findViewById(R.id.edit_txt_align);
+        btn1 = (Button) findViewById(R.id.plot_align);
+        iv1 = (ImageView) findViewById(R.id.align_iv);
 
         // Start Python if not already started and create python instance
         if (! Python.isStarted()) {
@@ -42,17 +45,15 @@ public class PlotPDRActivity extends AppCompatActivity {
 
         final Python py = Python.getInstance();
 
-        btn2.setOnClickListener(new View.OnClickListener() {
+        btn1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 //Read user's input
-                Sex = et2.getText().toString();
-                Height = et3.getText().toString();
+                sensor = et1.getText().toString();
 
                 //Create python object to load script
-                PyObject pyobj = py.getModule("pdr_1");
-                PyObject obj = pyobj.callAttr("pdr", Sex, Height);
+                PyObject pyobj = py.getModule("align_pdr");
+                PyObject obj = pyobj.callAttr("align_pdr", sensor, sex, height);
 
                 //Create a string
                 String str = obj.toString();
@@ -61,24 +62,8 @@ public class PlotPDRActivity extends AppCompatActivity {
                 //Convert to bitmap
                 Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
                 //Set it to image view
-                iv2.setImageBitmap(bmp);
+                iv1.setImageBitmap(bmp);
             }
         });
-
-
     }
-
-    public void align(View view) {
-        Intent intent = new Intent(this, AlignPDRActivity.class);
-        intent.putExtra("SEX", Sex);
-        intent.putExtra("HEIGHT", Height);
-        startActivity(intent);
-
-    }
-
-    public void goBack(View view) {
-        Intent intent = new Intent(this, PlotDataActivity.class);
-        startActivity(intent);
-    }
-
 }
