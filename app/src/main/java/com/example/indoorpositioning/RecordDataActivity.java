@@ -103,7 +103,7 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
     protected void onPause() {
         super.onPause();
         sensorManager.unregisterListener(this);
-        //unregisterReceiver(wifiScanReceiver);
+        unregisterReceiver(wifiScanReceiver);
     }
 
     private float calculateOrientation() {
@@ -150,7 +150,7 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
 
                 // sync wifi manager
                 wifiBuffer.add(wifiSinglePointBuffer);
-                registerReceiver(wifiScanReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+                //registerReceiver(wifiScanReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
                 wifiManager.startScan();
             }
         } else if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
@@ -314,16 +314,15 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
     BroadcastReceiver wifiScanReceiver = new BroadcastReceiver() {
         public void onReceive(Context c, Intent intent) {
             List<ScanResult> wifiScanList = wifiManager.getScanResults();
-            unregisterReceiver(this);
+            //unregisterReceiver(this);
 
             wifiSinglePointBuffer = "";
             for (int i=0; i<wifiScanList.size(); i++) {
                 wifiSinglePointBuffer = wifiSinglePointBuffer + wifiScanList.get(i).SSID +
                         '|' + wifiScanList.get(i).BSSID +
                         '|' + String.valueOf(wifiScanList.get(i).level) + ';';
-                Log.d("WiFi output", wifiSinglePointBuffer);
             }
-
+            Log.d("WiFi output", wifiSinglePointBuffer);
         }
     };
 }
