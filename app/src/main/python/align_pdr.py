@@ -11,14 +11,16 @@ import io
 import base64
 
 def align_pdr(sensor, sex, height):
+
+    sensor = int(sensor)
+    sex = int(sex)
+    height = int(height)
+
     #Read input files
     #inputfile = 'Sensor_20220321_190524_8170278612129910134.csv'
     #filename = join(dirname(__file__), inputfile)
     #inputfile_reader = pd.read_csv(filename)
     #inputfile = str(filename)
-    sensor = int(sensor)
-    sex = int(sex)
-    height = int(height)
 
     inputfile_1 = 'Sensor_20220324_164917_6405095473183875478.csv'
     inputfile_2 = 'Sensor_20220324_165108_1498070707813036265.csv'
@@ -200,10 +202,21 @@ def align_pdr(sensor, sex, height):
     #a1.title(measurement[sensor])
     line = a1.contour(x_vals, y_vals, Z, levels = np.linspace(lower,upper, 20), linewidths = 5, cmap='Blues', interpolation='none')
     fig.colorbar(line, ax = a1)
+    x_ticks = np.around(np.linspace(55.92205, 55.92340, len(Z)), decimals = 6)
+    y_ticks = np.around(np.linspace(-3.17318, -3.17067, len(Z)), decimals = 6)
+    a1.grid()
+
+    #Change meters to global coordinates
+    locs_x = x_vals
+    labels_x = x_ticks
+    locs_y = y_vals
+    labels_y = y_ticks
+    #a1.set_xticks(locs_x)
+    a1.set_xticklabels(labels_x, rotation=25)
+    #a1.set_yticks(locs_y)
+    a1.set_yticklabels(labels_y, rotation=0)
     #a1.set_xlabel('Horizontal displacement (meters)')
     #a1.set_ylabel('Vertical displacement (meters)')
-    #x_ticks = np.linspace(55.92205, 55.9234, len(Z))
-    #x_ticks = np.linspace(-3.17318, -3.17067, len(Z))
 
     #Use this canvas to convert image to numpy array
     fig.canvas.draw()

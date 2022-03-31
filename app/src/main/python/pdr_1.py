@@ -51,11 +51,8 @@ def pdr(sex, height):
 
     #Row indices for every 0.5 seconds (? to be changed), depending on the sampling rate
     #Assume sampling rate is 4 Hz
-<<<<<<< Updated upstream
-    sampling_rate = 50
-=======
+    #sampling_rate = 50
     sampling_rate = 4.8
->>>>>>> Stashed changes
     desired_rate = 2
     ratio = int(sampling_rate/desired_rate) #data to read every iteration
 
