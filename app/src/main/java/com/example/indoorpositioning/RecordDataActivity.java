@@ -4,13 +4,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.net.wifi.ScanResult;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -36,6 +40,9 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
     // get access to sensors
     private SensorManager sensorManager;
 
+    // get access to wifi
+    private WifiManager wifiManager;
+
     // represent a sensor
     private Sensor magneticField;
     private Sensor accelerometer;
@@ -48,12 +55,14 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
     float[] accelerometerValues = new float[3];
     float[] magneticFieldValues = new float[3];
 
-    // sensors buffer during recording
+    // sensors buffers during recording
     ArrayList<ArrayList<Float>> sensorBuffer = new ArrayList();
-    // buffer to store all the sensor data at one time instance
+    ArrayList<String> wifiBuffer = new ArrayList();
+    // buffer to store all the sensor and wifi data at one time instance
     ArrayList<Float> singlePointBuffer = new ArrayList(
             Arrays.asList(0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0)
     );
+    String wifiSinglePointBuffer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +76,14 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
         magneticField = (Sensor) sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         accelerometer = (Sensor) sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         gyroscope = (Sensor) sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+
+        // initialise wifi
+        wifiManager =  (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        if(wifiManager.getWifiState() == WifiManager.WIFI_STATE_DISABLED) {
+            wifiManager.setWifiEnabled(true);
+        }
+        registerReceiver(wifiScanReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+        wifiManager.startScan();
     }
 
     @Override
@@ -77,12 +94,16 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
         sensorManager.registerListener(this, magneticField, SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(this, gyroscope, SensorManager.SENSOR_DELAY_NORMAL);
+
+        // register wifi
+        registerReceiver(wifiScanReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         sensorManager.unregisterListener(this);
+        //unregisterReceiver(wifiScanReceiver);
     }
 
     private float calculateOrientation() {
@@ -126,6 +147,11 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
                     singlePointBufferClone.add(x);
                 }
                 sensorBuffer.add(singlePointBufferClone);
+
+                // sync wifi manager
+                wifiBuffer.add(wifiSinglePointBuffer);
+                registerReceiver(wifiScanReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+                wifiManager.startScan();
             }
         } else if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             // each datapoint is a three dimensional accelerometer sensor data
@@ -202,7 +228,7 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
         // write sensor data to file
         FileWriter fw = new FileWriter(data);
         BufferedWriter bw = new BufferedWriter(fw);
-        bw.write("mag_x,mag_y,mag_z,mag_h,acc_x,acc_y,acc_z,gyro_x,gyro_y,gyro_z,degree"); // header for csv file
+        bw.write("mag_x,mag_y,mag_z,mag_h,acc_x,acc_y,acc_z,gyro_x,gyro_y,gyro_z,degree,wifi"); // header for csv file
         bw.newLine();
         for (int i=0; i<sensorBuffer.size(); i++) {
             bw.write(sensorBuffer.get(i).get(0)+","+
@@ -215,7 +241,8 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
                     sensorBuffer.get(i).get(7)+","+
                     sensorBuffer.get(i).get(8)+","+
                     sensorBuffer.get(i).get(9)+","+
-                    sensorBuffer.get(i).get(10));
+                    sensorBuffer.get(i).get(10)+","+
+                    wifiBuffer.get(i));
             bw.newLine();
         }
         bw.close();
@@ -228,12 +255,29 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
                     Manifest.permission.READ_EXTERNAL_STORAGE);
             int writePermission = ActivityCompat.checkSelfPermission(this,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            int accessWifiPermission = ActivityCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_WIFI_STATE);
+            int changeWifiPermission = ActivityCompat.checkSelfPermission(this,
+                    Manifest.permission.CHANGE_WIFI_STATE);
+            int accessCoarseLocation = ActivityCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION);
+            int accessFineLocation = ActivityCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION);
+
 
             if (writePermission != PackageManager.PERMISSION_GRANTED ||
-                    readPermission != PackageManager.PERMISSION_GRANTED) {
+                    readPermission != PackageManager.PERMISSION_GRANTED ||
+                    accessWifiPermission != PackageManager.PERMISSION_GRANTED ||
+                    changeWifiPermission != PackageManager.PERMISSION_GRANTED ||
+                    accessCoarseLocation != PackageManager.PERMISSION_GRANTED ||
+                    accessFineLocation != PackageManager.PERMISSION_GRANTED) {
                 this.requestPermissions(
                         new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                Manifest.permission.READ_EXTERNAL_STORAGE},
+                                Manifest.permission.READ_EXTERNAL_STORAGE,
+                                Manifest.permission.ACCESS_WIFI_STATE,
+                                Manifest.permission.CHANGE_WIFI_STATE,
+                                Manifest.permission.ACCESS_COARSE_LOCATION,
+                                Manifest.permission.ACCESS_FINE_LOCATION},
                         REQUEST_ID_READ_WRITE_PERMISSION
                 );
             }
@@ -247,7 +291,17 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
             case REQUEST_ID_READ_WRITE_PERMISSION: {
                 if (grantResults.length > 1
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED
-                        && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                        && grantResults[1] == PackageManager.PERMISSION_GRANTED
+                        && grantResults[2] == PackageManager.PERMISSION_GRANTED
+                        && grantResults[3] == PackageManager.PERMISSION_GRANTED
+                        && grantResults[4] == PackageManager.PERMISSION_GRANTED
+                        && grantResults[5] == PackageManager.PERMISSION_GRANTED) {
+                    if(wifiManager.getWifiState() == WifiManager.WIFI_STATE_DISABLED) {
+                        Log.d("Wifi", "DISABLED->ENABLED");
+                        wifiManager.setWifiEnabled(true);
+                    }
+                    registerReceiver(wifiScanReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+                    wifiManager.startScan();
                     Toast.makeText(this, "Permission granted!", Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(this, "Permission denied!", Toast.LENGTH_LONG).show();
@@ -256,4 +310,20 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
             }
         }
     }
+
+    BroadcastReceiver wifiScanReceiver = new BroadcastReceiver() {
+        public void onReceive(Context c, Intent intent) {
+            List<ScanResult> wifiScanList = wifiManager.getScanResults();
+            unregisterReceiver(this);
+
+            wifiSinglePointBuffer = "";
+            for (int i=0; i<wifiScanList.size(); i++) {
+                wifiSinglePointBuffer = wifiSinglePointBuffer + wifiScanList.get(i).SSID +
+                        '|' + wifiScanList.get(i).BSSID +
+                        '|' + String.valueOf(wifiScanList.get(i).level) + ';';
+                Log.d("WiFi output", wifiSinglePointBuffer);
+            }
+
+        }
+    };
 }
