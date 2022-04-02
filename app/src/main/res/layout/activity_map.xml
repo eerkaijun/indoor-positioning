@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:padding="5dp">
+
+        <TextView
+            android:id="@+id/transparency_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/transparency" />
+
+        <SeekBar
+            android:id="@+id/transparencySeekBar"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/transparency_text"
+            android:layout_toRightOf="@+id/transparency_text" />
+
+    </RelativeLayout>
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        map:uiZoomControls="true"
+        map:uiZoomGestures="true"
+        map:cameraZoom="1"
+        map:uiRotateGestures="true"
+        map:uiTiltGestures="true"
+        map:uiScrollGestures="true"
+        map:uiCompass="true"
+        map:cameraTargetLat="0"
+        map:cameraTargetLng="0"
+        map:mapType="normal"/>
+</LinearLayout>

@@ -16,4 +16,6 @@
     <string name="aligntext">Align trajectory to world coordinates with desired sensor values:</string>
     <string name="askforsensor">Do you wish the sensor values to be overlaid as well?
         (0: no, 1: yes):</string>
+    <string name="map">Map</string>
+    <string name="transparency">Transparency</string>
 </resources>

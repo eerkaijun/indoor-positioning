@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'com.chaquo.python'
+    id "com.google.android.secrets-gradle-plugin" version "1.1.0"
 }
 
 android {
@@ -61,6 +62,7 @@ android {
 
 dependencies {
 
+    implementation 'com.google.android.gms:play-services-maps:18.0.2'
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'com.google.android.material:material:1.5.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
