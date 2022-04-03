@@ -19,5 +19,8 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-
+    public void openPrompt(View view) {
+        Intent intent = new Intent(this, UserPromptActivity.class);
+        startActivity(intent);
+    }
 }

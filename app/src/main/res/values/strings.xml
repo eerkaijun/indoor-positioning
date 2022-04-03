@@ -18,4 +18,15 @@
         (0: no, 1: yes):</string>
     <string name="map">Map</string>
     <string name="transparency">Transparency</string>
+    <string name="opt_for_user_info">Before that,\n\n To increase the accuracy of this app, we would like to know you gender and your height. We promise we will keep it a secret.\n\n
+        It\'s okay if you don\'t want to tell us tho. You can still enjoy the app!</string>
+    <string name="gender">Your gender?</string>
+    <string name="height">Your height? (Put 0 if you don\'t want to provide the info)</string>
+    <string name="height_hint">in centimeters</string>
+    <string name="open_map">Start exploring!</string>
+    <string-array name="genderOption">
+        <item>Prefer not to say</item>
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
 </resources>
