@@ -20,7 +20,8 @@ public class UserPromptActivity extends AppCompatActivity implements AdapterView
 
     private Spinner genderSpinner;
 
-    public int gender;
+    static int gender;
+    static float height;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,8 +47,7 @@ public class UserPromptActivity extends AppCompatActivity implements AdapterView
 
         //get data for height
         EditText editText = findViewById(R.id.editTextNumber);
-        int height = Integer.valueOf(editText.getText().toString());
-        intent.putExtra("height", height);
+        height = Float.valueOf(editText.getText().toString());
 
         startActivity(intent);
     }

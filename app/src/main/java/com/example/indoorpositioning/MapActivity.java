@@ -63,8 +63,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private GoogleMap map;
 
-    public int height = 165;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,10 +70,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         movementDetection = new MovementDetection(this);
         movementDetection.setOnMovementDetectionManagerListener(this);
-
-        //get intent
-        Intent intent = getIntent();
-        height = intent.getIntExtra("height", 165);
 
         //setup the transparency slider
         transparencyBar = findViewById(R.id.transparencySeekBar);
@@ -147,12 +141,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         20: Buildings*/
 
         // Construct a CameraPosition focusing on Kings Buildings and animate the camera to that position.
-        // Sets the center of the map to Mountain View
-        // Sets the zoom
-        // Sets the orientation of the camera to north
-        // Sets the tilt of the camera to 0 degrees
         CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(KB)                // Sets the center of the map to Mountain View
+                .target(KB)                // Sets the center of the map to KB
                 .zoom(18)                   // Sets the zoom
                 .bearing(0)                 // Sets the orientation of the camera to north
                 .tilt(0)                    // Sets the tilt of the camera to 0 degrees
@@ -184,8 +174,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void onHeadingUpdated(float degree) {
-        pointer.setRotation(degree);
         headingAngle = degree;
+        if (pointer != null) {
+            pointer.setRotation(headingAngle);
+        }
     }
 
     int step = 0;

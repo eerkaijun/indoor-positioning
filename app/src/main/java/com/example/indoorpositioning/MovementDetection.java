@@ -31,10 +31,6 @@ public class MovementDetection implements SensorEventListener {
     final private float uThreshold = 0.108f;
     final private float lThreshold = 0.088f;
 
-    //get gender and height
-    UserPromptActivity userPromptActivity = new UserPromptActivity();
-    MapActivity mapActivity = new MapActivity();
-
     // Sensors data value used to calculate orientation
     float[] accelerometerValues = new float[3];
     float[] magneticFieldValues = new float[3];
@@ -190,22 +186,21 @@ public class MovementDetection implements SensorEventListener {
 
     //step length calculator
     private float stepLength () {
-        int h;
+        float h;
 
         //default height
-        if (mapActivity.height == 0) {
-            //convert to m
-            h = 165/100;
+        if (UserPromptActivity.height == 0) {
+            h = 165f;
         }
         else {
-            //convert to m
-            h = mapActivity.height/100;
+            h = UserPromptActivity.height;
         }
 
-        //default gender
-        if (userPromptActivity.gender == 1) {
+        //default gender -- male
+        if (UserPromptActivity.gender == 1) {
             return (0.415f * h);
         }
+        //female
         else {
             return (0.413f * h);
         }
