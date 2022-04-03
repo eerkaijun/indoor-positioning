@@ -90,7 +90,7 @@ public class MovementDetection implements SensorEventListener {
     final float min_degree = 10.0f;
     final float max_degree = 80.0f;
     float prev_degree = 0.0f;
-    float degree;
+    float degree = 0.0f;
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
@@ -249,9 +249,7 @@ public class MovementDetection implements SensorEventListener {
         SensorManager.getRotationMatrix(R, null, accelerometerValues, magneticFieldValues);
         SensorManager.getOrientation(R, values);
 
-        float degree = (float) Math.toDegrees(values[0]);
-
-        return degree;
+        return (float) Math.toDegrees(values[0]);
     }
 
     @Override

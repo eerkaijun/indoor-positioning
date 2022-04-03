@@ -47,7 +47,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     //marker for current location
     private Marker pointer;
-    private float headingAngle;
+    private float headingAngle = 0.0f;
     ////To change after the algorithm works
     private LatLng currLocation = new LatLng(55.9226569, -3.1727689);
 
@@ -85,6 +85,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         // Get a handle to the fragment and register the callback.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+        assert mapFragment != null;
         mapFragment.getMapAsync(this);
     }
 
