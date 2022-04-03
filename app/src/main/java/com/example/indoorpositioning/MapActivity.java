@@ -48,7 +48,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     //marker for current location
     private Marker pointer;
     private float headingAngle;
-    private CameraPosition cameraPosition;
     ////To change after the algorithm works
     private LatLng currLocation = new LatLng(55.9226569, -3.1727689);
 
@@ -147,7 +146,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         20: Buildings*/
 
         // Construct a CameraPosition focusing on Kings Buildings and animate the camera to that position.
-        cameraPosition = new CameraPosition.Builder()
+        // Sets the center of the map to Mountain View
+        // Sets the zoom
+        // Sets the orientation of the camera to north
+        // Sets the tilt of the camera to 0 degrees
+        CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(KB)                // Sets the center of the map to Mountain View
                 .zoom(18)                   // Sets the zoom
                 .bearing(0)                 // Sets the orientation of the camera to north

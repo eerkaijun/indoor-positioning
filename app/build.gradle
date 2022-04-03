@@ -42,8 +42,9 @@ android {
         //give path to python.exe in the computing device android studio is running
         //"/Users/p.koutsouvelis/anaconda3/bin/python3.7"
         //"C:/Users/Eer Kai Jun/AppData/Local/Programs/Python/Python37/python.exe"
+        //"C:/Users/Salman/AppData/Local/Programs/Python/Python37/python.exe"
         python{
-            buildPython "/Users/p.koutsouvelis/anaconda3/bin/python3.7"
+            buildPython "C:/Users/Salman/AppData/Local/Programs/Python/Python37/python.exe"
         }
     }
 
