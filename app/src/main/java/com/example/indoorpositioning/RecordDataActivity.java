@@ -194,6 +194,7 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
 
     }
 
+    // called when the user would like to view plots of previously recorded data
     public void goPlotsOptionPage(View view) {
         if(!recordingInProgress) {
             Intent intent = new Intent(this, PlotDataActivity.class);

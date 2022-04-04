@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    // Called when a user would like to track its real time location on the map
     public void openPrompt(View view) {
         Intent intent = new Intent(this, UserPromptActivity.class);
         startActivity(intent);

@@ -64,8 +64,6 @@ public class PlotPDRActivity extends AppCompatActivity {
                 iv2.setImageBitmap(bmp);
             }
         });
-
-
     }
 
     public void align(View view) {
@@ -73,7 +71,6 @@ public class PlotPDRActivity extends AppCompatActivity {
         intent.putExtra("SEX", Sex);
         intent.putExtra("HEIGHT", Height);
         startActivity(intent);
-
     }
 
 }
