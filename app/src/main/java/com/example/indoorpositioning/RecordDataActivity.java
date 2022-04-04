@@ -208,11 +208,6 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
         }
     }
 
-    public void goHomePage(View view) {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-    }
-
     private void saveRecording() throws IOException {
         // Create an csv file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());

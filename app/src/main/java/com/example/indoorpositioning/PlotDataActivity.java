@@ -24,9 +24,4 @@ public class PlotDataActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void gotoRecordDataActivity(View view) {
-        Intent intent = new Intent(this, RecordDataActivity.class);
-        startActivity(intent);
-    }
-
 }

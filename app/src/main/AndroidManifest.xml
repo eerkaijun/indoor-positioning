@@ -47,10 +47,10 @@
         </activity>
         <activity
             android:name=".PlotDataActivity"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".RecordDataActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".RecordDataActivity" />
         </activity>
         <activity
             android:name=".PlotMeasurementActivity"
