@@ -35,8 +35,6 @@ import java.util.List;
 
 public class RecordDataActivity extends AppCompatActivity implements SensorEventListener {
 
-    static final int REQUEST_ID_READ_WRITE_PERMISSION = 0;
-
     // get access to sensors
     private SensorManager sensorManager;
 
@@ -68,8 +66,6 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_record_data);
-
-        askPermission();
 
         // initialise sensors
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -242,68 +238,6 @@ public class RecordDataActivity extends AppCompatActivity implements SensorEvent
         }
         bw.close();
         fw.close();
-    }
-
-    private void askPermission() {
-        if (Build.VERSION.SDK_INT >= 23) {
-            int readPermission = ActivityCompat.checkSelfPermission(this,
-                    Manifest.permission.READ_EXTERNAL_STORAGE);
-            int writePermission = ActivityCompat.checkSelfPermission(this,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE);
-            int accessWifiPermission = ActivityCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_WIFI_STATE);
-            int changeWifiPermission = ActivityCompat.checkSelfPermission(this,
-                    Manifest.permission.CHANGE_WIFI_STATE);
-            int accessCoarseLocation = ActivityCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_COARSE_LOCATION);
-            int accessFineLocation = ActivityCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION);
-
-
-            if (writePermission != PackageManager.PERMISSION_GRANTED ||
-                    readPermission != PackageManager.PERMISSION_GRANTED ||
-                    accessWifiPermission != PackageManager.PERMISSION_GRANTED ||
-                    changeWifiPermission != PackageManager.PERMISSION_GRANTED ||
-                    accessCoarseLocation != PackageManager.PERMISSION_GRANTED ||
-                    accessFineLocation != PackageManager.PERMISSION_GRANTED) {
-                this.requestPermissions(
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                Manifest.permission.READ_EXTERNAL_STORAGE,
-                                Manifest.permission.ACCESS_WIFI_STATE,
-                                Manifest.permission.CHANGE_WIFI_STATE,
-                                Manifest.permission.ACCESS_COARSE_LOCATION,
-                                Manifest.permission.ACCESS_FINE_LOCATION},
-                        REQUEST_ID_READ_WRITE_PERMISSION
-                );
-            }
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case REQUEST_ID_READ_WRITE_PERMISSION: {
-                if (grantResults.length > 1
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED
-                        && grantResults[1] == PackageManager.PERMISSION_GRANTED
-                        && grantResults[2] == PackageManager.PERMISSION_GRANTED
-                        && grantResults[3] == PackageManager.PERMISSION_GRANTED
-                        && grantResults[4] == PackageManager.PERMISSION_GRANTED
-                        && grantResults[5] == PackageManager.PERMISSION_GRANTED) {
-                    if(wifiManager.getWifiState() == WifiManager.WIFI_STATE_DISABLED) {
-                        Log.d("Wifi", "DISABLED->ENABLED");
-                        wifiManager.setWifiEnabled(true);
-                    }
-                    registerReceiver(wifiScanReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
-                    wifiManager.startScan();
-                    Toast.makeText(this, "Permission granted!", Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(this, "Permission denied!", Toast.LENGTH_LONG).show();
-                }
-                break;
-            }
-        }
     }
 
     BroadcastReceiver wifiScanReceiver = new BroadcastReceiver() {
