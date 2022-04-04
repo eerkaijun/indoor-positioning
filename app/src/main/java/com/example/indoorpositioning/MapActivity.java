@@ -9,8 +9,14 @@ package com.example.indoorpositioning;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.wifi.ScanResult;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.SeekBar;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -30,12 +36,18 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.RoundCap;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, SeekBar.OnSeekBarChangeListener, MovementDetection.OnMovementDetectionManagerListener {
 
     //sensor manager
     private MovementDetection movementDetection;
+
+    // get access to wifi
+    private WifiManager wifiManager;
 
     //Create a point to initialise where camera points at the beginning
     private static final LatLng KB = new LatLng(55.92257794064054, -3.1718609539182485);
@@ -63,10 +75,59 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private GoogleMap map;
 
+    // Wifi access point along the pathway
+    Map<String, List<Double>> wifiAccess = new HashMap(){{
+        put("54:78:1a:21:3b:ce", new ArrayList(){{
+            add(-3.172213655307299);
+            add(55.92286945847802);
+        }});
+        put("58:97:1e:14:75:51", new ArrayList(){{
+            add(-3.172063583747593);
+            add(55.922772971452424);
+        }});
+        put("58:97:1e:14:75:5e", new ArrayList(){{
+            add(-3.1717719704271743);
+            add(55.92249806304488);
+        }});
+        put("58:97:1e:15:11:61", new ArrayList(){{
+            add(-3.1717237939583662);
+            add(55.92242503283533);
+        }});
+        put("5c:83:8f:dd:6b:21", new ArrayList(){{
+            add(-3.1718986409867176);
+            add(55.922630579117);
+        }});
+        put("b8:3a:5a:ba:69:a0", new ArrayList(){{
+            add(-3.172418424028353);
+            add(55.92279054759158);
+        }});
+        put("b8:3a:5a:bb:5d:c0", new ArrayList(){{
+            add(-3.1721805576293463);
+            add(55.9228651820223);
+        }});
+        put("b8:be:bf:ef:1b:ee", new ArrayList(){{
+            add(-3.1720864367647055);
+            add(55.92280396412815);
+        }});
+        put("c4:0a:cb:25:13:ce", new ArrayList(){{
+            add(-3.1718691679548563);
+            add(55.922603367738695);
+        }});
+    }};
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+
+        // initialise wifi
+        wifiManager =  (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        if(wifiManager.getWifiState() == WifiManager.WIFI_STATE_DISABLED) {
+            wifiManager.setWifiEnabled(true);
+        }
+        registerReceiver(wifiScanReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+        wifiManager.startScan();
 
         movementDetection = new MovementDetection(this);
         movementDetection.setOnMovementDetectionManagerListener(this);
@@ -88,6 +149,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         super.onResume();
         //register sensors
         movementDetection.registerSensors();
+        registerReceiver(wifiScanReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
     }
 
     @Override
@@ -95,6 +157,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         super.onPause();
         //unregister sensors when unused
         movementDetection.unregisterSensors();
+        unregisterReceiver(wifiScanReceiver);
     }
 
     // When map is ready, do
@@ -241,4 +304,28 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void onStopTrackingTouch(SeekBar seekBar) {
 
     }
+
+    BroadcastReceiver wifiScanReceiver = new BroadcastReceiver() {
+        public void onReceive(Context c, Intent intent) {
+            List<ScanResult> wifiScanList = wifiManager.getScanResults();
+            // wifi fingerprinting only done for the first time, therefore unregister receiver after receiving results
+            unregisterReceiver(this);
+
+            String signalMAC = "";
+            int strongestSignal = 0;
+            for (int i=0; i<wifiScanList.size(); i++) {
+                if (wifiAccess.containsKey(wifiScanList.get(i).BSSID) && wifiScanList.get(i).level * (-1) > strongestSignal) {
+                    strongestSignal = wifiScanList.get(i).level * (-1);
+                    signalMAC = wifiScanList.get(i).BSSID;
+                    Log.d("Strongest signal", String.valueOf(strongestSignal));
+                    Log.d("Wifi name", wifiScanList.get(i).SSID + '|' + wifiScanList.get(i).BSSID);
+                }
+            }
+            if (wifiAccess.containsKey(signalMAC)) {
+                Double latitude = wifiAccess.get(signalMAC).get(1);
+                Double longitude = wifiAccess.get(signalMAC).get(0);
+                currLocation = new LatLng(latitude, longitude);
+            }
+        }
+    };
 }
