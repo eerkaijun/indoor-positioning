@@ -17,5 +17,7 @@ In `local.properties` file, add Google Map api key in order to be able to run th
 apiKey = <your_google_map_api_key>
 ```
 
+### Code Structure
 
+![alt text](./code-structure.jpg?raw=true)
 
