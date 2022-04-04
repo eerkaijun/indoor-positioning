@@ -24,6 +24,7 @@
     <string name="height">Your height? (Put 0 if you don\'t want to provide the info)</string>
     <string name="height_hint">in meters</string>
     <string name="open_map">Start exploring!</string>
+    <string name="track">Tracking</string>
     <string-array name="genderOption">
         <item>Prefer not to say</item>
         <item>Male</item>

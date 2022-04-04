@@ -11,7 +11,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.SeekBar;
+import android.widget.ToggleButton;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -29,6 +32,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.RoundCap;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
 
@@ -54,7 +58,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private static final int TRANSPARENCY_MAX = 100;
     private static final int TRANSPARENCY_DEF = 65;
 
+    //UI features
     private SeekBar transparencyBar;
+    private FloatingActionButton recenter;
+    private ToggleButton tracking;
+
+    private CameraPosition def_camera_position = new CameraPosition.Builder()
+            .target(currLocation)                   // Sets the center of the map to our current location
+            .bearing(headingAngle)                  // Sets the orientation of the camera to where the device is facing
+            .tilt(30)                               // Sets the tilt of the camera to 30 degrees
+            .zoom(22)                               //set zoom to 22
+            .build();                               // Creates a CameraPosition from the builder;
+    private boolean track = true;
 
     //ground overlay objects
     private GroundOverlay flFloor0;
@@ -75,6 +90,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         transparencyBar = findViewById(R.id.transparencySeekBar);
         transparencyBar.setMax(TRANSPARENCY_MAX);
         transparencyBar.setProgress(TRANSPARENCY_DEF);
+
+        //set floating button
+        recenter = findViewById(R.id.floatingActionButton);
+
+        //set toggle button
+        tracking = findViewById(R.id.toggleButton);
+        tracking.setChecked(true);
 
         // Get a handle to the fragment and register the callback.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -170,6 +192,27 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         polyLine.setJointType(JointType.ROUND);
         polyLine.setColor(COLOR_BLUE_ARGB);
         polyLine.setWidth(POLYLINE_STROKE_WIDTH_PX);
+
+        //recenter button click
+        recenter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick (View view) {
+                map.animateCamera(CameraUpdateFactory.newCameraPosition(def_camera_position));
+            }
+        });
+
+        //tracking switch
+        tracking.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    track = true;
+                }
+                else {
+                    track = false;
+                }
+            }
+        });
     }
 
     @Override
@@ -189,23 +232,36 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         updateTrail(currLocation);
         pointer.setPosition(currLocation);
 
-        //for the first step, zoom level set to default
-        if (step == 1) {
-            cameraPosition = new CameraPosition.Builder()
-                    .target(currLocation)                   // Sets the center of the map to our current location
-                    .bearing(headingAngle)                  // Sets the orientation of the camera to where the device is facing
-                    .tilt(30)                               // Sets the tilt of the camera to 30 degrees
-                    .zoom(22)                               //set zoom to 22
-                    .build();                               // Creates a CameraPosition from the builder
+        def_camera_position = new CameraPosition.Builder()
+                .target(currLocation)                   // Sets the center of the map to our current location
+                .bearing(headingAngle)                  // Sets the orientation of the camera to where the device is facing
+                .tilt(30)                               // Sets the tilt of the camera to 30 degrees
+                .zoom(22)                               //set zoom to 22
+                .build();                               // Creates a CameraPosition from the builder
+
+        //if track button is on
+        if (track) {
+            //for the first step, set zoom to default
+            if (step == 1) {
+                cameraPosition = def_camera_position;
+            }
+            // for the step afterwards, set zoom and tilt to to whatever the user set
+            else {
+                cameraPosition = new CameraPosition.Builder()
+                        .target(currLocation)                       // Sets the center of the map to our current location
+                        .bearing(headingAngle)                      // Sets the orientation of the camera to where the device is facing
+                        .tilt(map.getCameraPosition().tilt)         // Sets the tilt of the camera to user preference
+                        .zoom(map.getCameraPosition().zoom)         //set zoom to user preference
+                        .build();                                   // Creates a CameraPosition from the builder
+            }
         }
-        // for the step afterwards, set to whatever the user set
         else {
             cameraPosition = new CameraPosition.Builder()
-                    .target(currLocation)                   // Sets the center of the map to our current location
-                    .bearing(headingAngle)                  // Sets the orientation of the camera to where the device is facing
-                    .tilt(map.getCameraPosition().tilt)     // Sets the tilt of the camera to user preference
-                    .zoom(map.getCameraPosition().zoom)     //set zoom to user preference
-                    .build();                               // Creates a CameraPosition from the builder
+                    .target(map.getCameraPosition().target)     // Sets the center of the map to our current location
+                    .bearing(map.getCameraPosition().bearing)   // Sets the orientation of the camera to where the device is facing
+                    .tilt(map.getCameraPosition().tilt)         // Sets the tilt of the camera to user preference
+                    .zoom(map.getCameraPosition().zoom)         //set zoom to user preference
+                    .build();                                   // Creates a CameraPosition from the builder
         }
         map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 1000, null);
     }
