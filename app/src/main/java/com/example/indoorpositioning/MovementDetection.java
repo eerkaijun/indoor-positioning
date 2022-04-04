@@ -190,7 +190,7 @@ public class MovementDetection implements SensorEventListener {
 
         //default height
         if (UserPromptActivity.height == 0) {
-            h = 165f;
+            h = 1.65f;
         }
         else {
             h = UserPromptActivity.height;

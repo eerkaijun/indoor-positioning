@@ -64,20 +64,12 @@ public class PlotPDRActivity extends AppCompatActivity {
                 iv2.setImageBitmap(bmp);
             }
         });
-
-
     }
 
     public void align(View view) {
         Intent intent = new Intent(this, AlignPDRActivity.class);
         intent.putExtra("SEX", Sex);
         intent.putExtra("HEIGHT", Height);
-        startActivity(intent);
-
-    }
-
-    public void goBack(View view) {
-        Intent intent = new Intent(this, PlotDataActivity.class);
         startActivity(intent);
     }
 

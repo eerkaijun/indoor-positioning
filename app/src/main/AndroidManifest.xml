@@ -47,10 +47,10 @@
         </activity>
         <activity
             android:name=".PlotDataActivity"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".RecordDataActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".RecordDataActivity" />
         </activity>
         <activity
             android:name=".PlotMeasurementActivity"
@@ -61,10 +61,10 @@
         </activity>
         <activity
             android:name=".PlotPDRActivity"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".PlotDataActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".PlotDataActivity" />
         </activity>
         <activity
             android:name=".AlignPDRActivity"

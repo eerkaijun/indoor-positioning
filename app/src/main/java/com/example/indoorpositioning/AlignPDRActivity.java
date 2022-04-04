@@ -31,6 +31,7 @@ public class AlignPDRActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
+        // User's input
         String sex = intent.getStringExtra("SEX");
         String height = intent.getStringExtra("HEIGHT");
 
