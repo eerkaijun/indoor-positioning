@@ -54,7 +54,7 @@ public class AlignPDRActivity extends AppCompatActivity {
 
                 //Create python object to load script
                 PyObject pyobj = py.getModule("align_pdr");
-                PyObject obj = pyobj.callAttr("align_pdr", sensor, sex, height);
+                PyObject obj = pyobj.callAttr("align_pdr", sensor, sex, height, 0);
 
                 //Create a string
                 String str = obj.toString();

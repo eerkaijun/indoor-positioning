@@ -3,16 +3,14 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/5th year/indoor-positioning/app/src/main/res/layout/activity_map.xml" value="0.17258883248730963" />
         <entry key="..\:/Eer Kai Jun/Embedded Mobile Wireless 5/indoor-positioning/app/src/main/res/layout/activity_main.xml" value="0.33" />
-        <entry key="..\:/Eer Kai Jun/Embedded Mobile Wireless 5/indoor-positioning/app/src/main/res/layout/activity_plot_data.xml" value="0.33" />
-        <entry key="..\:/Eer Kai Jun/Embedded Mobile Wireless 5/indoor-positioning/app/src/main/res/layout/activity_plot_pdr.xml" value="0.25" />
         <entry key="..\:/Eer Kai Jun/Embedded Mobile Wireless 5/indoor-positioning/app/src/main/res/layout/activity_record_data.xml" value="0.25" />
-        <entry key="..\:/Eer Kai Jun/Embedded Mobile Wireless 5/indoor-positioning/app/src/main/res/layout/activity_user_prompt.xml" value="0.25" />
         <entry key="..\:/Uni/Year 5 stuffszs/indoor-positioning/app/src/main/res/layout/activity_main.xml" value="0.3875" />
         <entry key="..\:/Uni/Year 5 stuffszs/indoor-positioning/app/src/main/res/layout/activity_map.xml" value="0.3875" />
         <entry key="..\:/Uni/Year 5 stuffszs/indoor-positioning/app/src/main/res/layout/activity_user_prompt.xml" value="0.3875" />
+        <entry key="app/src/main/res/layout/activity_align_options.xml" value="0.335" />
         <entry key="app/src/main/res/layout/activity_align_pdr.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/activity_automatic_align.xml" value="0.5" />
         <entry key="app/src/main/res/layout/activity_plot_data.xml" value="0.55" />
         <entry key="app/src/main/res/layout/activity_plot_measurement.xml" value="0.335" />
         <entry key="app/src/main/res/layout/activity_plot_pdr.xml" value="0.25" />
