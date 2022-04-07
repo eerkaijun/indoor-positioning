@@ -44,7 +44,7 @@ android {
         //"C:/Users/Eer Kai Jun/AppData/Local/Programs/Python/Python37/python.exe"
         //"C:/Users/Salman/AppData/Local/Programs/Python/Python37/python.exe"
         python{
-            buildPython "/Users/p.koutsouvelis/anaconda3/bin/python3.7"
+            buildPython "C:/Users/Eer Kai Jun/AppData/Local/Programs/Python/Python37/python.exe"
         }
     }
 

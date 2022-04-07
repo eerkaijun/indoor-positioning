@@ -1,3 +1,9 @@
+//By Petros Koutsouvelis
+/*
+Given a certain part of a trajectory, automatically align this trajectory on the floor plan.
+ */
+
+
 package com.example.indoorpositioning;
 
 import android.content.Intent;

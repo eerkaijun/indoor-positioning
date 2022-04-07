@@ -1,3 +1,8 @@
+//By Petros Koutsouvelis
+/*
+This activity plots the sensory data and display it on the user interface.
+ */
+
 package com.example.indoorpositioning;
 
 import android.graphics.Bitmap;

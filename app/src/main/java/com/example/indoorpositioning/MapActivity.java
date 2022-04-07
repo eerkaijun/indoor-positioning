@@ -1,7 +1,8 @@
-//By Salman Saiful Redzuan
+//By Salman Saiful Redzuan, Kai Jun Eer
 /*
 This activity simply shows the map, that includes the ground floor plan of Fleeming Jenkin, Hudson Beare and Sanderson Building, and our location.
 It uses step detection method to determines the next location. There's also a trail of where you have walked inside the building.
+We use wifi fingerprinting to determine the user's starting location.
  */
 
 package com.example.indoorpositioning;
@@ -65,7 +66,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private Marker pointer;
     private float headingAngle = 0.0f;
     ////To change after the algorithm works
-    private LatLng currLocation = new LatLng(55.9226569, -3.1727689);
+    static LatLng currLocation = new LatLng(55.9226569, -3.1727689);
 
     private static final int TRANSPARENCY_MAX = 100;
     private static final int TRANSPARENCY_DEF = 65;

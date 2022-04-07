@@ -11,6 +11,8 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
+import java.util.Map;
+
 public class MovementDetection implements SensorEventListener {
     //listener that pass through info of the activities
     private OnMovementDetectionManagerListener movementDetectionManagerListener;
@@ -76,8 +78,8 @@ public class MovementDetection implements SensorEventListener {
     float x, y;
 
     //world coordinate initialise
-    float prev_lat = 55.9226569f;
-    float prev_lon = -3.1727689f;
+    float prev_lat = (float)MapActivity.currLocation.latitude;
+    float prev_lon = (float)MapActivity.currLocation.longitude;
     float lat, lon;
     final float lat_deg_per_m = (float) (1/110947.2);
     final float lon_deg_per_m = (float) (1/87843.36);
@@ -113,6 +115,7 @@ public class MovementDetection implements SensorEventListener {
 
         //heading angle
         degree = calculateOrientation();
+        degree = lowPass(degree);
         movementDetectionManagerListener.onHeadingUpdated(degree);
 
         //step detector
@@ -131,6 +134,7 @@ public class MovementDetection implements SensorEventListener {
             steps = steps + 1;
 
             if (steps > 0) {
+                //check if the change of the angle is more than 10 degrees
                 if (Math.abs(prev_degree - degree) <= min_degree) {
                     //coordinate
                     x = (float) (prev_x + (sl * Math.sin(Math.toRadians(prev_degree))));
@@ -139,7 +143,9 @@ public class MovementDetection implements SensorEventListener {
                     //world coordinate
                     lat = (float) (prev_lat + ((sl * Math.cos(Math.toRadians(prev_degree))) * lat_deg_per_m));
                     lon = (float) (prev_lon + ((sl * Math.sin(Math.toRadians(prev_degree))) * lon_deg_per_m));
-                } else if (Math.abs(prev_degree - degree) > min_degree &&
+                }
+                //if the angle is between the min and max threshold
+                else if (Math.abs(prev_degree - degree) > min_degree &&
                         Math.abs(prev_degree - degree) < max_degree) {
                     //coordinate
                     x = (float) (prev_x + (sl * Math.sin(Math.toRadians(degree))));
@@ -148,7 +154,10 @@ public class MovementDetection implements SensorEventListener {
                     //world coordinate
                     lat = (float) (prev_lat + ((sl * Math.cos(Math.toRadians(degree))) * lat_deg_per_m));
                     lon = (float) (prev_lon + ((sl * Math.sin(Math.toRadians(degree))) * lon_deg_per_m));
-                } else {
+                }
+                //more than 80 degree change, a turn detected
+                else {
+                    //a right turn detected
                     if ((degree - prev_degree) > 0) {
                         //coordinate
                         x = (float) (prev_x + (sl * Math.sin(Math.toRadians(prev_degree + 90))));
@@ -159,7 +168,9 @@ public class MovementDetection implements SensorEventListener {
                         lon = (float) (prev_lon + ((sl * Math.sin(Math.toRadians(prev_degree + 90))) * lon_deg_per_m));
 
                         prev_degree = prev_degree + 90;
-                    } else {
+                    }
+                    //a left turn detected
+                    else {
                         //coordinate
                         x = (float) (prev_x + (sl * Math.sin(Math.toRadians(prev_degree - 90))));
                         y = (float) (prev_y + (sl * Math.cos(Math.toRadians(prev_degree - 90))));
@@ -233,6 +244,15 @@ public class MovementDetection implements SensorEventListener {
         filtered[1] = (mag[1] * alpha) + (filtered[1] * (1-alpha));
         filtered[2] = (mag[2] * alpha) + (filtered[2] * (1-alpha));
         return filtered;
+    }
+
+    //low pass filter for angle smoothing
+    float filteredangle = 0.0f;
+    private float lowPass(float mag) {
+        float alpha = 0.2f;
+
+        filteredangle = (mag * alpha) + (filteredangle * (1-alpha));
+        return filteredangle;
     }
 
     //heading angle calculator
