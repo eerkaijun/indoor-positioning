@@ -185,6 +185,7 @@ def align_pdr(sensor, sex, height, start_pos):
         lat_val = start_lat
         long_vals = []
         lat_vals = []
+        #values from
         latdeg_per_m = 1/111340.33010639016
         longdeg_per_m = 1/62521.56943020176
         for i in range(len(x_vals)-1):
