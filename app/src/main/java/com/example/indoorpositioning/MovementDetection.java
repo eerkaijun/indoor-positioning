@@ -134,6 +134,7 @@ public class MovementDetection implements SensorEventListener {
             steps = steps + 1;
 
             if (steps > 0) {
+                //check if the change of the angle is more than 10 degrees
                 if (Math.abs(prev_degree - degree) <= min_degree) {
                     //coordinate
                     x = (float) (prev_x + (sl * Math.sin(Math.toRadians(prev_degree))));
@@ -142,7 +143,9 @@ public class MovementDetection implements SensorEventListener {
                     //world coordinate
                     lat = (float) (prev_lat + ((sl * Math.cos(Math.toRadians(prev_degree))) * lat_deg_per_m));
                     lon = (float) (prev_lon + ((sl * Math.sin(Math.toRadians(prev_degree))) * lon_deg_per_m));
-                } else if (Math.abs(prev_degree - degree) > min_degree &&
+                }
+                //if the angle is between the min and max threshold
+                else if (Math.abs(prev_degree - degree) > min_degree &&
                         Math.abs(prev_degree - degree) < max_degree) {
                     //coordinate
                     x = (float) (prev_x + (sl * Math.sin(Math.toRadians(degree))));
@@ -151,7 +154,10 @@ public class MovementDetection implements SensorEventListener {
                     //world coordinate
                     lat = (float) (prev_lat + ((sl * Math.cos(Math.toRadians(degree))) * lat_deg_per_m));
                     lon = (float) (prev_lon + ((sl * Math.sin(Math.toRadians(degree))) * lon_deg_per_m));
-                } else {
+                }
+                //more than 80 degree change, a turn detected
+                else {
+                    //a right turn detected
                     if ((degree - prev_degree) > 0) {
                         //coordinate
                         x = (float) (prev_x + (sl * Math.sin(Math.toRadians(prev_degree + 90))));
@@ -162,7 +168,9 @@ public class MovementDetection implements SensorEventListener {
                         lon = (float) (prev_lon + ((sl * Math.sin(Math.toRadians(prev_degree + 90))) * lon_deg_per_m));
 
                         prev_degree = prev_degree + 90;
-                    } else {
+                    }
+                    //a left turn detected
+                    else {
                         //coordinate
                         x = (float) (prev_x + (sl * Math.sin(Math.toRadians(prev_degree - 90))));
                         y = (float) (prev_y + (sl * Math.cos(Math.toRadians(prev_degree - 90))));
