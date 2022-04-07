@@ -11,6 +11,8 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
+import java.util.Map;
+
 public class MovementDetection implements SensorEventListener {
     //listener that pass through info of the activities
     private OnMovementDetectionManagerListener movementDetectionManagerListener;
@@ -76,8 +78,8 @@ public class MovementDetection implements SensorEventListener {
     float x, y;
 
     //world coordinate initialise
-    float prev_lat = 55.9226569f;
-    float prev_lon = -3.1727689f;
+    float prev_lat = (float)MapActivity.currLocation.latitude;
+    float prev_lon = (float)MapActivity.currLocation.longitude;
     float lat, lon;
     final float lat_deg_per_m = (float) (1/110947.2);
     final float lon_deg_per_m = (float) (1/87843.36);

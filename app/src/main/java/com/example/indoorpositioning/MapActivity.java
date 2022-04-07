@@ -65,7 +65,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private Marker pointer;
     private float headingAngle = 0.0f;
     ////To change after the algorithm works
-    private LatLng currLocation = new LatLng(55.9226569, -3.1727689);
+    static LatLng currLocation = new LatLng(55.9226569, -3.1727689);
 
     private static final int TRANSPARENCY_MAX = 100;
     private static final int TRANSPARENCY_DEF = 65;
