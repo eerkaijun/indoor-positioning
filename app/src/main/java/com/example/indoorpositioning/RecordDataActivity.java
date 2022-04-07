@@ -1,3 +1,10 @@
+//By Kai Jun Eer
+/*
+This activity implements a data recording module that collects magnetometer, accelerometer and wifi.
+We use the accelerometer and magnetometer data to calculate the orientation of the device. At the end
+of data recording, these data is saved into a csv file.
+ */
+
 package com.example.indoorpositioning;
 
 import androidx.appcompat.app.AppCompatActivity;

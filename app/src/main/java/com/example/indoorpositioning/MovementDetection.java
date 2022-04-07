@@ -115,6 +115,7 @@ public class MovementDetection implements SensorEventListener {
 
         //heading angle
         degree = calculateOrientation();
+        degree = lowPass(degree);
         movementDetectionManagerListener.onHeadingUpdated(degree);
 
         //step detector
@@ -235,6 +236,15 @@ public class MovementDetection implements SensorEventListener {
         filtered[1] = (mag[1] * alpha) + (filtered[1] * (1-alpha));
         filtered[2] = (mag[2] * alpha) + (filtered[2] * (1-alpha));
         return filtered;
+    }
+
+    //low pass filter for angle smoothing
+    float filteredangle = 0.0f;
+    private float lowPass(float mag) {
+        float alpha = 0.2f;
+
+        filteredangle = (mag * alpha) + (filteredangle * (1-alpha));
+        return filteredangle;
     }
 
     //heading angle calculator

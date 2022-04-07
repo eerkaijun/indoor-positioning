@@ -1,7 +1,8 @@
-//By Salman Saiful Redzuan
+//By Salman Saiful Redzuan, Kai Jun Eer
 /*
 This activity simply shows the map, that includes the ground floor plan of Fleeming Jenkin, Hudson Beare and Sanderson Building, and our location.
 It uses step detection method to determines the next location. There's also a trail of where you have walked inside the building.
+We use wifi fingerprinting to determine the user's starting location.
  */
 
 package com.example.indoorpositioning;
