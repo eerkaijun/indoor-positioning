@@ -1,3 +1,9 @@
+//By Petros Koutsouvelis
+/*
+Top level module for PlotDataActivity and PlotPDRActivity. Prompt the users to select between these options.
+ */
+
+
 package com.example.indoorpositioning;
 
 import android.content.Intent;

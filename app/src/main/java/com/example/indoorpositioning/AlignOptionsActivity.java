@@ -1,3 +1,9 @@
+//By Petros Koutsouvelis
+/*
+Top level module for AlignPDRActivity and AutomaticAlignActivity. Prompt the users to select between these options.
+ */
+
+
 package com.example.indoorpositioning;
 
 import android.content.Intent;

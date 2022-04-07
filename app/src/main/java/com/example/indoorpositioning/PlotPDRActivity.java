@@ -1,3 +1,8 @@
+//By Petros Koutsouvelis
+/*
+This activity plots a PDR trajectory and display it on the user interface.
+ */
+
 package com.example.indoorpositioning;
 
 import android.content.Intent;

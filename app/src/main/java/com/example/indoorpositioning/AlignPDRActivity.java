@@ -1,3 +1,9 @@
+//By Petros Koutsouvelis
+/*
+Align the PDR trajectory to the maps and floor plans.
+ */
+
+
 package com.example.indoorpositioning;
 
 import android.content.Intent;
