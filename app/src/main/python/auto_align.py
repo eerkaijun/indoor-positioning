@@ -253,7 +253,7 @@ def auto_align(sex, height, sep_plot):
             lat_interpolated.append(y[i])
         return long_interpolated, lat_interpolated
 
-    
+
     #Extract equations from trajectory using linear regression
     #-------------------------------------------------------------------
     #Plot floor plan as background

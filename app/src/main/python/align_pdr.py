@@ -22,7 +22,11 @@ def align_pdr(sensor, sex, height, start_pos):
                    55.9223084, 55.9227005, 55.922693, 55.9227185, 55.9226569]
     long_corners = [-3.17163, -3.1717641, -3.1712769, -3.1716507, -3.1717245,
                     -3.172093, -3.1725526, -3.1725745, -3.1726026, -3.1727689]
-    start_pos = [long_corners[start_pos], lat_corners[start_pos]]
+    #Read input number for start position if it is one of the defined points, or input coordinates
+    if len(str(start_pos)) > 1:
+        start_pos = [str(start_pos)[0], str(start_pos)[1]]
+    else:
+        start_pos = [long_corners[start_pos], lat_corners[start_pos]]
 
 
     #Read input files:
