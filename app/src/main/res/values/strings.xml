@@ -12,7 +12,7 @@
     <string name="inputsextext">Choose a number between 0 and 1 corresponding to your sex:
         (0:female, 1: male)</string>
     <string name="plot">Plot</string>
-    <string name="align">Align:</string>
+    <string name="align">Align</string>
     <string name="aligntext">Align trajectory to world coordinates with desired sensor values:</string>
     <string name="askforsensor">Do you wish the sensor values to be overlaid as well?
         (0: no, 1: yes):</string>
@@ -30,4 +30,22 @@
         <item>Male</item>
         <item>Female</item>
     </string-array>
+    <string name="alignoptions">Align Trajectory Options</string>
+    <string name="alignoptionstext1">There are two options to align the trajectory! \n\n
+    1) Align using world coordinates. This options requires inputting the coordinates of the starting position.
+    The coordinates can be found using the WiFi positioning option in our app. Otherwise, insert a number from 0 to 9
+    corresponding to the coordinates of all the corridors from the desired path: 0 corresponds to the entrance of
+    Sanderson and 9 to the entrance of the computing lab!</string>
+    <string name="alignoptionstext2">2) Automatic alignment of trajectory based on the path geometry and magnetic field
+    strength sensor measurements.</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyBSQGJyNTOqaCtJ_w_mOqUJdIhS_5P3HAE</string>
+    <string name="autoalign">Automatic Alignment</string>
+    <string name="start">Start</string>
+    <string name="heightread">Height</string>
+    <string name="sexread">Sex</string>
+    <string name="automaticalignment">Automatic Alignment</string>
+    <string name="automaticalignmenttext">Do you want the complete trajectory aligned or each line separately?
+     (0: No, 1: Yes).</string>
+
+
 </resources>
