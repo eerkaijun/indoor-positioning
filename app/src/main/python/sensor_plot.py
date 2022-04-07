@@ -1,4 +1,8 @@
 #Created by Petros Koutsouvelis in 03/2022
+#The script plots the amplitude vs time relationship of the desired sensor
+#selected by the user. The sensor data are read from the csv file and are
+#plotted to a figure that is then converted to a byte array.
+
 
 from os.path import dirname, join
 from PIL import Image
@@ -10,15 +14,23 @@ import io
 import base64
 
 def sensor_plot(sensor):
-    #Declare variables
+    #Read function inputs:
+    #----------------------------------------------------------------------------
     sensor = int(sensor)
-    sampling_rate = 4
 
+    #Read input files:
+    #-----------------------------------------------------------------------------
     inputfile = 'Sensor_20220321_190524_8170278612129910134.csv'
     filename = join(dirname(__file__), inputfile)
-    #inputfile = str(filename)
     inputfile_reader = pd.read_csv(filename) # Make each row a list with one string-type element
-    
+
+    #Declare variables:
+    #-----------------------------------------------------------------------------
+    sampling_rate = 4
+
+    #Data processing:
+    #-----------------------------------------------------------------------------
+
     measurement = ['Magnetometer measurement (uT): X-axis',
     'Magnetometer measurement (uT): Y-axis',
     'Magnetometer measurement (uT): Z-axis',
@@ -50,7 +62,6 @@ def sensor_plot(sensor):
     fig.canvas.draw()
     img = np.fromstring(fig.canvas.tostring_rgb(), dtype = np.uint8, sep = '')
     img = img.reshape(fig.canvas.get_width_height()[::-1] + (3,))
-    #img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
 
     #Convert to PIL image and then to byte string to return it in the java code
     pil_im = Image.fromarray(img)

@@ -1,4 +1,9 @@
 #Created by Petros Koutsouvelis in 03/2022
+#The script performs automatic alignment of the trajectory.
+#Firstly, the PDR trajectory based on the sensor measurement is computed, then
+#the line equations are extracted using regression and are classified to the
+#corresponding building region using EMF values. Aligned lines and complete
+#trajectory are plotted and converted to byte array.
 
 from os.path import dirname, join
 from PIL import Image
@@ -16,8 +21,8 @@ def auto_align(sex, height, sep_plot):
     #----------------------------------------------------------------------------
     sex = int(sex)
     height = int(height)
-    sep_plot = int(sep_plot)
-
+    sep_plot = int(sep_plot) #0: plot complete trajectory
+                             #1: plot each line separately
 
     #Read input files:
     #-----------------------------------------------------------------------------

@@ -1,4 +1,9 @@
 #Created by Petros Koutsouvelis in 03/2022
+#The script performs alignment of the trajectory based on world coordinates.
+#Firstly, the PDR trajectory based on the sensor measurement is computed, then
+#x and y values are converted to world coordinates and the desired sensor measurements
+#are appended to the plot in a contour above the buildings' floor plan. Starting position
+# is required as input.The plotted figure is then converted to byte array.
 
 from os.path import dirname, join
 from PIL import Image
